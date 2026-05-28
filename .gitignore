@@ -1,0 +1,13 @@
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+data/sessions/*.log
+ssh_honeypot/logs/*.log
+*.log
+out.txt
+check_syntax.py
+fix_visual.py
+fix_visual_2.py
+.env
+.agents/

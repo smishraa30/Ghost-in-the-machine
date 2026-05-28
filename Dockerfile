@@ -29,6 +29,14 @@ EXPOSE 3000 2222
 RUN echo '#!/bin/bash\n\n# Start Python SSH server in the background\ncd /app/ssh_honeypot && python ssh_server.py &\n\n# Start Node.js Web Dashboard & Terminal\ncd /app && node server.js\n' > /app/start.sh \
     && chmod +x /app/start.sh
 
+# Security Hardening: Run as non-root user
+RUN useradd -m phantasm \
+    && chown -R phantasm:phantasm /app \
+    && mkdir -p /app/ssh_honeypot/logs \
+    && chown -R phantasm:phantasm /app/ssh_honeypot/logs
+
+USER phantasm
+
 # Healthcheck to reset the container if compromised or crashed
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
   CMD curl -f http://localhost:3000/api/stats || exit 1

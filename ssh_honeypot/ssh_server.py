@@ -207,7 +207,7 @@ class SessionHandler:
 
         try:
             response = self.loop.run_until_complete(
-                self.ai.process_command(self.session_id, command)
+                self.ai.process_command(self.session_id, command, mongo=self.mongo)
             )
         except Exception as e:
             logger.error("AI error: %s", e)

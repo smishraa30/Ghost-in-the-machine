@@ -3,32 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ghost Dashboard — Threat Intelligence</title>
+  <title>Threat Intelligence | Project Phantasm</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/dashboard.css">
+  <style>
+    /* Custom additional tweaks for ultra-premium look */
+    body {
+      background: radial-gradient(circle at 10% 20%, rgba(10, 14, 23, 1) 0%, rgba(5, 7, 12, 1) 90%);
+    }
+    .main-content {
+      position: relative;
+    }
+    .main-content::before {
+      content: ''; position: absolute; top: -10%; right: -10%; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.05) 0%, transparent 70%);
+      pointer-events: none; z-index: 1; filter: blur(50px);
+    }
+    .main-content::after {
+      content: ''; position: absolute; bottom: -10%; left: -10%; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+      pointer-events: none; z-index: 1; filter: blur(50px);
+    }
+    .topbar, .sidebar, .panel, .stat-card {
+      position: relative; z-index: 2;
+    }
+    /* Fork Glowing Banner on About Tab */
+    .fork-banner {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+      border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 12px;
+      padding: 24px; text-align: center; margin-bottom: 24px;
+    }
+    .fork-banner h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #fff; }
+    .fork-banner p { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .fork-banner .github-btn {
+      padding: 10px 24px; font-size: 13px; border-radius: 24px;
+    }
+  </style>
 </head>
 <body>
+
   <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo">👻</div>
-        <h1>GHOST</h1>
-        <span class="subtitle">Threat Intel</span>
+        <h1>PHANTASM</h1>
+        <div class="subtitle">Deception Control</div>
       </div>
+      
       <nav class="sidebar-nav">
         <a href="#" class="nav-item active" data-tab="overview">
           <span class="nav-icon">📊</span> Overview
         </a>
         <a href="#" class="nav-item" data-tab="sessions">
-          <span class="nav-icon">🔗</span> Sessions
+          <span class="nav-icon">🕵️</span> Sessions
         </a>
         <a href="#" class="nav-item" data-tab="live">
           <span class="nav-icon">📡</span> Live Feed
         </a>
         <a href="#" class="nav-item" data-tab="threats">
-          <span class="nav-icon">⚠️</span> Threats
+          <span class="nav-icon">⚠️</span> Exploit Alerts
         </a>
         <a href="#" class="nav-item" data-tab="credentials">
           <span class="nav-icon">🔑</span> Captured Creds
@@ -36,7 +71,11 @@
         <a href="#" class="nav-item" data-tab="advanced">
           <span class="nav-icon">🧠</span> Advanced Decep.
         </a>
+        <a href="#" class="nav-item" data-tab="about">
+          <span class="nav-icon">📖</span> Project Dossier
+        </a>
       </nav>
+
       <div class="sidebar-footer">
         <div class="active-indicator">
           <span class="pulse-dot"></span>
@@ -45,18 +84,21 @@
       </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <main class="main-content">
       <!-- Top Bar -->
       <header class="topbar">
         <h2 id="page-title">Threat Overview</h2>
         <div class="topbar-actions">
+          <a href="https://github.com/Ishan-7230/Ghost-in-the-machine" target="_blank" class="github-btn">
+            <span class="github-icon">🍴</span> Fork on GitHub
+          </a>
           <span class="status-badge" id="system-status">● System Active</span>
           <span class="timestamp" id="current-time"></span>
         </div>
       </header>
 
-      <!-- Overview Tab -->
+      <!-- Tab Content: Overview -->
       <section class="tab-content active" id="tab-overview">
         <div class="stats-grid">
           <div class="stat-card glass">
@@ -103,7 +145,7 @@
           </div>
         </div>
 
-        <!-- Recent Activity -->
+        <!-- Recent Sessions Panel -->
         <div class="panel glass">
           <div class="panel-header">
             <h3>📋 Recent Sessions</h3>
@@ -113,7 +155,7 @@
             <table class="data-table" id="sessions-table">
               <thead>
                 <tr>
-                  <th>ID</th><th>Source IP</th><th>User</th>
+                  <th>ID</th><th>Source IP</th><th>User Agent</th>
                   <th>Commands</th><th>Risk</th><th>Status</th><th>Duration</th>
                 </tr>
               </thead>
@@ -123,43 +165,67 @@
         </div>
       </section>
 
-      <!-- Sessions Detail Tab -->
+      <!-- Tab Content: Sessions -->
       <section class="tab-content" id="tab-sessions">
         <div class="panel glass">
-          <div class="panel-header"><h3>🔗 All Sessions</h3></div>
-          <div class="panel-body" id="sessions-detail"></div>
+          <div class="panel-header">
+            <h3>🕵️ Active & Historical Sessions Details</h3>
+          </div>
+          <div class="panel-body">
+            <div id="sessions-detail">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th><th>Source IP</th><th>User Agent</th>
+                    <th>Commands</th><th>Risk</th><th>Status</th><th>Duration</th>
+                  </tr>
+                </thead>
+                <tbody id="sessions-tbody-detail">
+                  <!-- JS dynamically fills this or updates standard lists -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- Live Feed Tab -->
+      <!-- Tab Content: Live Feed -->
       <section class="tab-content" id="tab-live">
         <div class="panel glass live-panel">
           <div class="panel-header">
-            <h3>📡 Live Command Feed</h3>
-            <span class="live-badge">● LIVE</span>
+            <h3>📡 Live Command Stream</h3>
+            <span class="live-badge">● LIVE telemetry</span>
           </div>
           <div class="panel-body live-feed" id="live-feed">
-            <div class="empty-state">Waiting for attacker activity...</div>
+            <div class="empty-state">Waiting for adversary commands...</div>
           </div>
         </div>
       </section>
 
-      <!-- Threats Tab -->
+      <!-- Tab Content: Threat Alerts -->
       <section class="tab-content" id="tab-threats">
         <div class="panel glass">
-          <div class="panel-header"><h3>⚠️ Exploit Attempts & Alerts</h3></div>
-          <div class="panel-body" id="threats-list"></div>
+          <div class="panel-header">
+            <h3>⚠️ Exploit Attempts & Deep Intrusion Alarms</h3>
+          </div>
+          <div class="panel-body" id="threats-list">
+            <div class="empty-state">No critical alarms generated yet. Monitoring active.</div>
+          </div>
         </div>
       </section>
 
-      <!-- Credentials Tab -->
+      <!-- Tab Content: Captured Credentials -->
       <section class="tab-content" id="tab-credentials">
         <div class="panel glass">
-          <div class="panel-header"><h3>🔑 Captured Credentials</h3></div>
+          <div class="panel-header">
+            <h3>🔑 Decoy Captured Authentication Attempts</h3>
+          </div>
           <div class="panel-body">
             <table class="data-table" id="creds-table">
               <thead>
-                <tr><th>Time</th><th>Session</th><th>Type</th><th>Username</th><th>Password</th></tr>
+                <tr>
+                  <th>Timestamp</th><th>Session</th><th>Protocol/Service</th><th>Username</th><th>Password</th>
+                </tr>
               </thead>
               <tbody id="creds-tbody"></tbody>
             </table>
@@ -167,18 +233,18 @@
         </div>
       </section>
 
-      <!-- Advanced Deception Tab -->
+      <!-- Tab Content: Advanced Deception -->
       <section class="tab-content" id="tab-advanced">
-        <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stats-grid">
           <div class="stat-card glass">
-            <div class="stat-icon" style="background:rgba(124,58,237,0.15);color:#a855f7;">🧪</div>
+            <div class="stat-icon" style="background:rgba(6, 182, 212, 0.15);color:var(--accent-cyan);">🧪</div>
             <div class="stat-info">
               <span class="stat-value" id="stat-poisoned-data">2.4 MB</span>
               <span class="stat-label">Poisoned Data Fed to AI</span>
             </div>
           </div>
           <div class="stat-card glass">
-            <div class="stat-icon" style="background:rgba(59,130,246,0.15);color:#60a5fa;">🌐</div>
+            <div class="stat-icon" style="background:rgba(16, 185, 129, 0.15);color:var(--accent-green);">🌐</div>
             <div class="stat-info">
               <span class="stat-value" id="stat-federated-nodes">3</span>
               <span class="stat-label">Active Federated Nodes</span>
@@ -188,28 +254,150 @@
             <div class="stat-icon">⚛️</div>
             <div class="stat-info">
               <span class="stat-value" id="stat-quantum-alerts">0</span>
-              <span class="stat-label">Quantum Brute-Forces (State-Actor)</span>
+              <span class="stat-label">Quantum Attacks Blocked</span>
             </div>
           </div>
         </div>
 
         <div class="panel glass">
-          <div class="panel-header"><h3>🌐 Federated Threat Intelligence Stream</h3></div>
+          <div class="panel-header">
+            <h3>🌐 Federated Threat Intelligence Stream</h3>
+          </div>
           <div class="panel-body">
-            <div id="federated-feed" style="font-family:'JetBrains Mono', monospace; font-size:12px; color:rgba(255,255,255,0.7); line-height:1.6; max-height:300px; overflow-y:auto; padding:10px; background:rgba(0,0,0,0.3); border-radius:8px;">
-              <div style="color:#a855f7; margin-bottom:10px;">[SYS] Polling Phantasm Honeynet for new threat profiles...</div>
-              <div>[US-East] Detected credential stuffing via PwnKit. Adaptation deployed.</div>
-              <div style="margin-bottom:10px; color:rgba(255,255,255,0.4);">--- Just now</div>
-              <div>[Asia-Pacific] Automated Prompt Injection botnet identified. Poisoned data volume increased.</div>
-              <div style="margin-bottom:10px; color:rgba(255,255,255,0.4);">--- 15 mins ago</div>
+            <div id="federated-feed" style="font-family:'JetBrains Mono', monospace; font-size:12px; color:rgba(255,255,255,0.7); line-height:1.6; padding:12px; background:rgba(0,0,0,0.3); border-radius:8px; border: 1px solid rgba(255,255,255,0.05);">
+              <div style="color:var(--accent-purple); margin-bottom:10px;">[SYS] Connecting to Global Honeynet federations...</div>
+              <div>[Honeynet-Core] Adaptation payload synchronizing globally.</div>
+              <div style="margin-bottom:10px; color:var(--text-dim);">--- Just now</div>
+              <div>[Node-AP] Prompt Injection payload filtered. AI poisoning threshold exceeded.</div>
+              <div style="margin-bottom:10px; color:var(--text-dim);">--- 14 mins ago</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab Content: Project Dossier (About) -->
+      <section class="tab-content" id="tab-about">
+        <!-- Glowing Fork Banner -->
+        <div class="fork-banner">
+          <h3>🍴 Want to Deploy Your Own Honeypot?</h3>
+          <p>Ghost in the Machine is fully open-source. Fork the repository, customize the simulated command behaviors, and run it on your own server using Docker Compose in seconds!</p>
+          <a href="https://github.com/Ishan-7230/Ghost-in-the-machine" target="_blank" class="github-btn">
+            <span class="github-icon">📁</span> Fork ishamael/Ghost-in-the-machine
+          </a>
+        </div>
+
+        <div class="dossier-grid">
+          <!-- Column 1: System Intel -->
+          <div class="dossier-card">
+            <h4>📖 System Dossier & Overview</h4>
+            <p><strong>Ghost in the Machine (Project Phantasm)</strong> is an advanced, high-fidelity Linux terminal deception honeypot designed to trap, profile, and study malicious actors in real-time. By emulating a realistic SSH environment, it tricks attackers into executing command lines while keeping them completely sandboxed from any real target system.</p>
+            
+            <h4>🛡️ Core Deception Systems</h4>
+            <ul>
+              <li>
+                <strong>Realistic Shell Emulation:</strong> Emulates Linux shell behaviors, command history, simulated file systems, and authentic server components (such as sudo prompts, configuration dumps, and system files).
+              </li>
+              <li>
+                <strong>Adversary Profiling Engine:</strong> Dynamically calculates risk scores based on command complexity, payload syntax, and attempts to access privileged files.
+              </li>
+              <li>
+                <strong>Keystroke & Password Tarpit:</strong> Captures attacker authentication attempts (usernames/passwords) and files uploaded to decoy services.
+              </li>
+              <li>
+                <strong>AI Poisoning Strategy:</strong> Feeds decoy, highly structured pseudo-data to AI scanners, disrupting hostile automated intelligence gathering.
+              </li>
+            </ul>
+          </div>
+
+          <!-- Column 2: Tech Specs & Flow -->
+          <div class="dossier-card">
+            <h4>⚙️ Technical Specifications</h4>
+            <div style="margin-bottom: 20px;">
+              <span class="tech-tag">Node.js</span>
+              <span class="tech-tag">Express</span>
+              <span class="tech-tag">Socket.io</span>
+              <span class="tech-tag">Vanilla JS</span>
+              <span class="tech-tag">Tailwind Grid</span>
+              <span class="tech-tag">Glassmorphism UI</span>
+              <span class="tech-tag">Docker Compose</span>
+            </div>
+
+            <h4>📡 Active Telemetry Flow</h4>
+            <div class="architecture-flow">
+              <div class="flow-step">
+                <span>Attacker SSH session connects</span>
+              </div>
+              <div class="flow-arrow">▼</div>
+              <div class="flow-step" style="border-color: var(--accent-cyan);">
+                <span>CommandProcessor validates input</span>
+              </div>
+              <div class="flow-arrow">▼</div>
+              <div class="flow-step">
+                <span>Decoy response generated & delayed</span>
+              </div>
+              <div class="flow-arrow">▼</div>
+              <div class="flow-step" style="border-color: var(--accent-green);">
+                <span>Socket.io streams telemetries live</span>
+              </div>
+            </div>
+            <p style="font-size: 11px; color: var(--text-dim); margin-top: 12px; text-align: center;">
+              Global adaptation updates deploy to federated nodes synchronously.
+            </p>
           </div>
         </div>
       </section>
     </main>
   </div>
 
+  <!-- Scripts -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/dashboard.js"></script>
+  <script>
+    // Seamless tab extension listener for the new Dossier tab
+    (function() {
+      // Add custom listener to dynamic details filling
+      const originalSessionsHandler = socket => {
+        // Double-check detail table updates when sessions arrive
+        socket.on('sessions', (sessions) => {
+          const tbody = document.getElementById('sessions-tbody-detail');
+          if (tbody) {
+            tbody.innerHTML = sessions.slice(0, 30).map(s => {
+              const risk = s.riskScore >= 80 ? 'critical' : (s.riskScore >= 50 ? 'high' : (s.riskScore >= 20 ? 'medium' : 'low'));
+              const status = s.active ? '<span class="status-active">● Active</span>' : '<span class="status-ended">○ Ended</span>';
+              
+              // Duration calculation
+              let duration = '—';
+              if (s.startTime) {
+                const diff = Math.floor((s.endTime ? new Date(s.endTime) : new Date() - new Date(s.startTime)) / 1000);
+                duration = diff < 60 ? `${diff}s` : `${Math.floor(diff / 60)}m ${diff % 60}s`;
+              }
+
+              return `<tr>
+                <td>${s.id ? s.id.substring(0, 8) : '—'}</td>
+                <td>${s.ip || 'unknown'}</td>
+                <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  ${s.userAgent || '—'}
+                </td>
+                <td>${s.totalCommands || 0}</td>
+                <td><span class="risk-badge ${risk}">${risk} (${s.riskScore || 0})</span></td>
+                <td>${status}</td>
+                <td>${duration}</td>
+              </tr>`;
+            }).join('');
+          }
+        });
+      };
+      
+      // Let's hook our listener safely on window load
+      window.addEventListener('load', () => {
+        // Quick fallback to fetch socket from global context if accessible
+        // In dashboard.js, let's make sure our custom sessions-tbody-detail gets filled!
+        if (typeof io !== 'undefined') {
+          const detailSocket = io('/dashboard');
+          originalSessionsHandler(detailSocket);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

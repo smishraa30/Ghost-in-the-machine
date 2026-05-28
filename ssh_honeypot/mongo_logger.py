@@ -38,6 +38,7 @@ class MongoLogger:
                 self.db[config.MONGO_COLLECTION_EXPLOITS].create_index("session_id")
                 self.db[config.MONGO_COLLECTION_CREDENTIALS].create_index("session_id")
                 self.db[config.MONGO_COLLECTION_ANALYSIS].create_index("session_id")
+                self.db[config.MONGO_COLLECTION_VFS].create_index([("session_id", 1), ("path", 1)], unique=True)
                 return
 
             except (ConnectionFailure, ServerSelectionTimeoutError, Exception) as e:
@@ -57,6 +58,7 @@ class MongoLogger:
             "exploits": [],
             "credentials": [],
             "analysis": [],
+            "vfs": [],
         }
 
 
@@ -226,6 +228,34 @@ class MongoLogger:
                 {"session_id": session_id}, {"_id": 0}
             ))
         return [c for c in self._memory.get("credentials", []) if c["session_id"] == session_id]
+
+    def vfs_add_file(self, session_id, path, content=""):
+        if self.connected:
+            self.db[config.MONGO_COLLECTION_VFS].update_one(
+                {"session_id": session_id, "path": path},
+                {"$set": {"content": content, "timestamp": datetime.datetime.utcnow()}},
+                upsert=True
+            )
+        else:
+            found = False
+            for f in self._memory["vfs"]:
+                if f["session_id"] == session_id and f["path"] == path:
+                    f["content"] = content
+                    found = True
+                    break
+            if not found:
+                self._memory["vfs"].append({"session_id": session_id, "path": path, "content": content})
+
+    def vfs_remove_file(self, session_id, path):
+        if self.connected:
+            self.db[config.MONGO_COLLECTION_VFS].delete_one({"session_id": session_id, "path": path})
+        else:
+            self._memory["vfs"] = [f for f in self._memory["vfs"] if not (f["session_id"] == session_id and f["path"] == path)]
+
+    def vfs_get_files(self, session_id):
+        if self.connected:
+            return list(self.db[config.MONGO_COLLECTION_VFS].find({"session_id": session_id}, {"_id": 0}))
+        return [f for f in self._memory.get("vfs", []) if f["session_id"] == session_id]
 
     def get_stats(self):
         if self.connected:

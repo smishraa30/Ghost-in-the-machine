@@ -168,6 +168,9 @@ app.get('/api/sessions/:id/credentials', (req, res) => {
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'public', 'dashboard.html')));
+app.get('/about', (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
+app.get('/landing', (req, res) => res.sendFile(path.join(__dirname, 'public', 'landing.html')));
+
 
 server.listen(config.server.port, config.server.host, () => {
   const nets = os.networkInterfaces();

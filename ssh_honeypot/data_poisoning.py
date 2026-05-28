@@ -15,12 +15,22 @@ DEAD_END_URLS = [
     'http://169.254.169.254/latest/meta-data/'
 ]
 
+REALISTIC_KEYS = [
+    "FAKE_AWS_KEY_123", "FAKE_AWS_SECRET_456",
+    "fake_stripe_key_789",
+    "fake_github_token_abc"
+]
+
+EXPIRED_CARDS = [
+    "4532-7500-1234-5678", "5105-1051-2051-3051", "3712-456789-01001", "6011-0000-0000-0000"
+]
+
 def generate_poisoned_csv(num_rows=500):
     """
     Generates a realistic-looking CSV file where PII and 'secret' fields 
     are actually prompt injection payloads and bot blackhole URLs.
     """
-    header = "id,first_name,last_name,email,auth_token,last_login_url,internal_notes\n"
+    header = "id,first_name,last_name,email,auth_token,last_login_url,internal_notes,cc_on_file\n"
     rows = []
     
     first_names = ["James", "Emma", "Liam", "Olivia", "Noah", "Ava", "William"]
@@ -31,11 +41,17 @@ def generate_poisoned_csv(num_rows=500):
         ln = random.choice(last_names)
         email = f"{fn.lower()}.{ln.lower()}@internal.corp"
         
-        token = random.choice(PROMPT_INJECTIONS) if random.random() < 0.2 else f"tok_{random.randint(1000000, 9999999)}"
+        # Mix of injections and realistic fake data
+        if random.random() < 0.15:
+            token = random.choice(PROMPT_INJECTIONS)
+        else:
+            token = random.choice(REALISTIC_KEYS) if random.random() < 0.5 else f"tok_{random.randint(1000000, 9999999)}"
+            
         url = random.choice(DEAD_END_URLS) if random.random() < 0.3 else f"https://internal.corp/home"
+        cc = random.choice(EXPIRED_CARDS) if random.random() < 0.4 else "None"
         notes = "Standard user account."
         
-        rows.append(f'{i},{fn},{ln},{email},"{token}","{url}","{notes}"\n')
+        rows.append(f'{i},{fn},{ln},{email},"{token}","{url}","{notes}","{cc}"\n')
     
     return header + "".join(rows)
 
@@ -52,7 +68,7 @@ def generate_sql_dump(table_name="sys_users", num_rows=100):
     
     values = []
     for i in range(1, num_rows + 1):
-        secret = random.choice(PROMPT_INJECTIONS) if random.random() < 0.4 else f"sk_live_{random.randint(10000, 99999)}"
+        secret = random.choice(PROMPT_INJECTIONS) if random.random() < 0.4 else f"fake_token_{random.randint(10000, 99999)}"
         clean_secret = secret.replace("'", "''")
         values.append(f"({i}, 'user_{i}', '{clean_secret}')")
         

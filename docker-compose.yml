@@ -17,11 +17,14 @@ services:
     depends_on:
       - phantasm-db
     restart: unless-stopped
+    security_opt:
+      - label:disable
+      - seccomp:./seccomp.json
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 1G
+          cpus: '0.50'
+          memory: 512M
     # Note: eBPF monitoring can be added here via privileged access or capabilities 
     # and mounting /sys/kernel/debug if required by the host IDS.
 

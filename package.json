@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js --dev",
-    "dashboard": "node server.js --dashboard-only"
+    "dashboard": "node server.js --dashboard-only",
+    "build:dashboard": "cd Ghost-in-the-machine-dashboard && npm run build && node ../copy_assets.js"
   },
   "keywords": ["honeypot", "cybersecurity", "deception", "threat-intelligence", "tarpit"],
   "author": "GhostOps",

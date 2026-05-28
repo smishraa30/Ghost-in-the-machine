@@ -1,0 +1,27 @@
+{
+    "defaultAction": "SCMP_ACT_ALLOW",
+    "syscalls": [
+        {
+            "names": [
+                "reboot",
+                "swapon",
+                "swapoff",
+                "ptrace",
+                "syslog",
+                "mknod",
+                "mount",
+                "umount2",
+                "pivot_root",
+                "adjtimex",
+                "settimeofday",
+                "stime",
+                "setdomainname",
+                "sethostname",
+                "delete_module",
+                "init_module",
+                "create_module"
+            ],
+            "action": "SCMP_ACT_ERRNO"
+        }
+    ]
+}
